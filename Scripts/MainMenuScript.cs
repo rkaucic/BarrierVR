@@ -14,11 +14,6 @@ public class MainMenuScript : MonoBehaviour {
     private GameObject activePlayerPointer;
     private GameObject playerPointer;
 
-    // <Robert>
-    private GameObject lightningButton;
-    private MenuButtonHighligher lightningButtonHighlighter;
-    // </Robert>
-
     private GameObject papyrusButton;
     private MenuButtonHighligher papyrusButtonHighlighter;
     private GameObject undyneButton;
@@ -53,9 +48,6 @@ public class MainMenuScript : MonoBehaviour {
 
     private GameObject undyne;
     private GameObject sans;
-    // <Robert>
-    private GameObject lightning;
-    // </Robert>
 
     private GameObject[] credits;
 
@@ -81,11 +73,10 @@ public class MainMenuScript : MonoBehaviour {
     private MenuButtonHighligher mainMenuButtonHighlighter;
 
     void Start () {
-        //player = GameObject.FindGameObjectWithTag("Player");
-        player = GameObject.Find("OVRPlayerController");
+        player = GameObject.FindGameObjectWithTag("Player");
         playerInfo = player.GetComponent<PlayerInfo>();
         playerController = player.GetComponent<OVRPlayerController>();
-        //playerPointer = (GameObject)Resources.Load("PlayerPointer");
+        playerPointer = (GameObject)Resources.Load("PlayerPointer");
 
         papyrusButton = transform.Find("PapyrusButton").gameObject;
         papyrusButtonHighlighter = papyrusButton.GetComponent<MenuButtonHighligher>();
@@ -113,11 +104,6 @@ public class MainMenuScript : MonoBehaviour {
         undyneKillButton = transform.Find("UndyneKillButton").gameObject;
         undyneKillButtonHighlighter = undyneKillButton.GetComponent<MenuButtonHighligher>();
         undyneKillButton.SetActive(false);
-
-        // <Robert>
-        lightningButton = transform.Find("LightningButton").gameObject;
-        lightningButtonHighlighter = lightningButton.GetComponent<MenuButtonHighligher>();
-        // </Robert>
 
         hud = GameObject.Find("ElasticHUD");
         mainMenu = GameObject.Find("MainMenu");
@@ -177,13 +163,11 @@ public class MainMenuScript : MonoBehaviour {
             playMusic((AudioClip)Resources.Load("Small Shock"));
         else
             playMusic((AudioClip)Resources.Load("Dummy!"));
-        /*
         if (pointerActive == false)
         {
             Transform attachShield = GameObject.Find("RightShield").transform;
             activePlayerPointer = Instantiate(playerPointer, attachShield.position, attachShield.rotation, attachShield);
-        }*/
-
+        }
         fightButton.SetActive(false);
         mercyButton.SetActive(false);
         papyrusButton.SetActive(true);
@@ -192,10 +176,6 @@ public class MainMenuScript : MonoBehaviour {
         quitButton.SetActive(true);
         //cheatButton.SetActive(true);
         //megaCheatButton.SetActive(true);
-
-        // <Robert>
-        lightningButton.SetActive(true);
-        // </Robert>
 
         upButton.SetActive(true);
         downButton.SetActive(true);
@@ -241,7 +221,7 @@ public class MainMenuScript : MonoBehaviour {
         playerController.SetMusicPitch(1.0f);
         mainMenuButton.SetActive(true);
         Transform attachShield = GameObject.Find("RightShield").transform;
-        //activePlayerPointer = Instantiate(playerPointer, attachShield.position, attachShield.rotation, attachShield);
+        activePlayerPointer = Instantiate(playerPointer, attachShield.position, attachShield.rotation, attachShield);
         isEnabled = true;
     }
 
@@ -274,14 +254,6 @@ public class MainMenuScript : MonoBehaviour {
         sans.GetComponent<SansAI>().RegisterTotalKills(killedCount);
     }
 
-    // <Robert>
-    private void startLightning()
-    {
-        lightning.GetComponent<AILibrary>().RegisterAttackButtons(fightButton, mercyButton);
-        lightning.GetComponent<LightningAI>().RegisterTotalKills(killedCount);
-    }
-    // </Robert>
-
     private void buttonManager()
     {
         if(domPressedThisFrame)
@@ -306,14 +278,7 @@ public class MainMenuScript : MonoBehaviour {
                 enemyFought = 2;
                 sans = (GameObject)Instantiate(Resources.Load("Sans"));
                 Invoke("startSans", 0.01f);
-            } // <Robert>
-            else if(lightningButtonHighlighter.IsHovered())
-            {
-                closeMenu();
-                enemyFought = 3;
-                lightning = (GameObject)Instantiate(Resources.Load("Lightning"));
-                Invoke("startLightning", 0.01f);
-            } // </Robert>
+            }
             else if(quitButtonHighlighter.IsHovered())
             {
                 Application.Quit();
@@ -413,10 +378,6 @@ public class MainMenuScript : MonoBehaviour {
         papyrusKillButtonHighlighter.ForceDeselect();
         undyneKillButton.SetActive(false);
         undyneKillButtonHighlighter.ForceDeselect();
-        // <Robert>
-        lightningButtonHighlighter.ForceDeselect();
-        lightningButton.SetActive(false);
-        // </Robert>
 
         /*cheatButtonHighlighter.ForceDeselect();
         cheatButton.SetActive(false);
@@ -446,10 +407,6 @@ public class MainMenuScript : MonoBehaviour {
                 sansButtonHighlighter.SetEnabled(false);
                 sansButton.GetComponent<SpriteRenderer>().color = killedColor;
                 break;
-            default: // <Robert>
-                killedCount--;
-                break;
-                // </Robert>
         }
     }
 

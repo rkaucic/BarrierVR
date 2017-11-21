@@ -54,7 +54,7 @@ public class MenuButtonHighligher : MonoBehaviour
     void OnTriggerEnter(Collider collider)
     {
         GameObject other = collider.gameObject;
-        if (other.gameObject.CompareTag("Pointer") && isEnabled)
+        if (other.tag == "Pointer" && isEnabled)
         {
             isHovered = true;
             spriteRenderer.sprite = SelectedSprite;
@@ -64,7 +64,7 @@ public class MenuButtonHighligher : MonoBehaviour
     void OnTriggerExit(Collider collider)
     {
         GameObject other = collider.gameObject;
-        if (other.gameObject.CompareTag("Pointer") && isEnabled)
+        if (other.tag == "Pointer" && isEnabled)
         {
             isHovered = false;
             spriteRenderer.sprite = UnselectedSprite;

@@ -13,7 +13,6 @@ public class BeamProjectile : MonoBehaviour {
     private int layerMask;
     private float lastTimeHit;
     private GameObject player;
-    private GameObject rightHand;
 
     public AudioClip HapticBlock;
     public AudioClip HapticBreak;
@@ -23,22 +22,16 @@ public class BeamProjectile : MonoBehaviour {
     private bool playedHaptic;
 
 	void Start () {
-        player = GameObject.Find("OVRPlayerController");
+        player = GameObject.FindGameObjectWithTag("Player");
         lineScript = GetComponent<VolumetricLineBehavior>();
-        layerMask = (1 << 10);    // Stop at hittable layer
+        layerMask = (1 << 8) | (1 << 9);    // Stop at either the player or a shield
         lastTimeHit = 0.0f;
         playedHaptic = false;
-        rightHand = GameObject.Find("RightShield");
-        /*
-        Vector3 target = GameObject.Find("CenterEyeAnchor").transform.position;
-        target.y -= 0.1f;
-        this.transform.rotation = Quaternion.LookRotation(target - this.transform.position);*/
-    }
+	}
 
     private Vector3 getEndLocation(out bool hitPlayer, out bool brokeShield)
     {
         RaycastHit hitInfo;
-        Debug.DrawRay(transform.position, transform.forward, Color.red, 50.0f, true);
         if (Physics.Raycast(transform.position, transform.forward, out hitInfo, 50.0f, layerMask))
         {
             //Vector3 endPos = hitInfo.point;//transform.position + (hitInfo.distance * transform.forward);
@@ -46,8 +39,8 @@ public class BeamProjectile : MonoBehaviour {
             GameObject hitObj = hitInfo.collider.gameObject;
             hitPlayer = hitObj.tag == "Player";
             string hitObjTag = hitObj.tag;
-            brokeShield = ((hitObjTag == "Shield" || hitObjTag == "Pointer") && !rightHand.GetComponent<Shield>().IsOverlapping());
-            if (!playedHaptic && (hitObjTag == "Shield" || hitObjTag == "Pointer"))
+            brokeShield = (hitObjTag == "Shield" && !hitObj.GetComponent<Shield>().IsOverlapping());
+            if (!playedHaptic && hitObjTag == "Shield")
             {
                 playedHaptic = true;
                 if (!brokeShield)
@@ -64,9 +57,9 @@ public class BeamProjectile : MonoBehaviour {
             }
             return endPos;
         }
-        //Debug.Log("ERROR: Beam didn't find player or shield!");
+        Debug.Log("ERROR: Beam didn't find player or shield!");
         hitPlayer = brokeShield = false;
-        return new Vector3(0.0f, 0.0f, 0.0f);
+        return new Vector3();
     }
 
     private bool canDamagePlayer()
@@ -80,30 +73,19 @@ public class BeamProjectile : MonoBehaviour {
         lastTimeHit = Time.fixedTime;
         Instantiate(PlayerHitSound, player.transform.position, player.transform.rotation);
     }
-
-    public void des()
-    {
-        Destroy(this.gameObject);
-    }
-
-    // Update is called once per frame
-    void FixedUpdate () {
+	
+	// Update is called once per frame
+	void FixedUpdate () {
         bool hitPlayer, brokeShield;
-        Vector3 tmp = getEndLocation(out hitPlayer, out brokeShield);
-        if (tmp.x != 0.0f || tmp.y != 0.0f || tmp.z != 0.0f)
-        {
-            lineScript.EndPos = tmp;
-        }
+        lineScript.EndPos = getEndLocation(out hitPlayer, out brokeShield);
         if(hitPlayer && canDamagePlayer())
         {
             damagePlayer();
-            Invoke("des", 2);
         }
         else if(brokeShield && canDamagePlayer())
         {
             damagePlayer();
             Instantiate(ShieldBreakSound, player.transform.position, player.transform.rotation);
-            Invoke("des", 2);
         }
 	}
 }
