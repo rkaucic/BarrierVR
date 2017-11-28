@@ -23,8 +23,6 @@ public class CanonSeries : MonoBehaviour {
     private Quaternion finalRot;
     private float lastFireTime;
     private float spawnTime;
-
-    private GameObject target;
 	
 	void Start () {
         muzzleTrans = Muzzle.transform;
@@ -37,7 +35,6 @@ public class CanonSeries : MonoBehaviour {
         finalRotEuler = finalRot.eulerAngles;
         lastFireTime = spawnTime = Time.fixedTime;*/
         transform.rotation = Quaternion.LookRotation(spawner.transform.position - muzzleTrans.position);
-        target = GameObject.Find("ForwardDirection");
         if (FireOnSpawn)
         {
             Fire();
